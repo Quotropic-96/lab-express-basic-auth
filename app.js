@@ -1,6 +1,9 @@
 // Import npm packages for sessions and cookies
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
+const cookieParser = require('cookie-parser');
+const logger = require('morgan');
+const path = require('path');
 // ℹ️ Gets access to environment variables/settings
 // https://www.npmjs.com/package/dotenv
 require('dotenv/config');
