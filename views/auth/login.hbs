@@ -1,5 +1,8 @@
 <h2>Login Page</h2>
-<form action="/auth/login" method="post">
+{{#if indication}}
+    <p style="color:purple">{{indication}}</p>
+{{/if}}
+<form action="/auth/login/{{#if originalUrl}}{{originalUrl}}{{/if}}" method="post">
     <label for="username">Username:</label>
     <input type="text" name="username" placeholder="Walter_White" required="true">
     <label for="password">Password:</label>

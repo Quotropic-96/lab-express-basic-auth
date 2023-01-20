@@ -42,8 +42,9 @@ router.get('/login', (req, res, next) => {
 });
 
 /* POST log in */
-router.post('/login', async (req, res, next) => {
+router.post('/login/:originalUrl', async (req, res, next) => {
     const { username, password } = req.body;
+    const { originalUrl } = req.params;
     if (!username || !password) {
         res.render('auth/login', {error: 'All fields must be provided'});
         return;
@@ -57,7 +58,11 @@ router.post('/login', async (req, res, next) => {
         const passwordMatch = await bcrypt.compare(password, userInDB.hashedPassword);
         if (passwordMatch) {
             req.session.currentUser = userInDB;
-            res.render('user/profile', userInDB);
+            if (originalUrl) {
+                res.redirect('/' + originalUrl);
+            } else {
+                res.render('user/profile', userInDB);
+            }
         } else {
             res.render('auth/login', {error: 'Unable to authenticate'})
         }
