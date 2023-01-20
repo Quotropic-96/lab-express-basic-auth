@@ -41,10 +41,36 @@ router.get('/login', (req, res, next) => {
     res.render('auth/login');
 });
 
-/* POST log in */
+/* POST for login without redirection */
+router.post('/login/', async (req, res, next) => {
+    const { username, password } = req.body;
+    if (!username || !password) {
+        res.render('auth/login', {error: 'All fields must be provided'});
+        return;
+    }
+    try {
+        const userInDB = await User.findOne({ username: username});
+        if (!userInDB) {
+            res.render('auth/login', { error: `${username} does not exist`});
+            return;
+        }
+        const passwordMatch = await bcrypt.compare(password, userInDB.hashedPassword);
+        if (passwordMatch) {
+            req.session.currentUser = userInDB;
+            res.render('user/profile', userInDB);
+        } else {
+            res.render('auth/login', {error: 'Unable to authenticate'})
+        }
+    } catch (error) {
+        next(error);
+    }
+})
+
+/* POST log in from redirection*/
 router.post('/login/:originalUrl', async (req, res, next) => {
     const { username, password } = req.body;
     const { originalUrl } = req.params;
+    console.log(originalUrl)
     if (!username || !password) {
         res.render('auth/login', {error: 'All fields must be provided'});
         return;
