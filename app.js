@@ -1,3 +1,6 @@
+// Import npm packages for sessions and cookies
+const session = require('express-session');
+const MongoStore = require('connect-mongo');
 // ℹ️ Gets access to environment variables/settings
 // https://www.npmjs.com/package/dotenv
 require('dotenv/config');
@@ -23,6 +26,33 @@ const projectName = 'lab-express-basic-auth';
 const capitalized = string => string[0].toUpperCase() + string.slice(1).toLowerCase();
 
 app.locals.title = `${capitalized(projectName)}- Generated with Ironlauncher`;
+
+// Session setup
+app.use(logger('dev'));
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser());
+app.use(express.static(path.join(__dirname, 'public')));
+
+// For deployment
+app.set('trust proxy', 1);
+app.use(
+  session({
+    name: 'show-app',
+    secret: process.env.SESSION_SECRET,
+    resave: true,
+    saveUninitialized: false,
+    cookie: {
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+      secure: process.env.NODE_ENV === 'production',
+      httpOnly: true,
+      maxAge: 2592000000 // 30 days in milliseconds
+    },
+    store: MongoStore.create({
+      mongoUrl: process.env.MONGO_URL
+    })
+  })
+)
 
 // 👇 Start handling routes here
 const indexRouter = require('./routes/index');
