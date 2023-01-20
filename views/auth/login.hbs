@@ -1,1 +1,11 @@
 <h2>Login Page</h2>
+<form action="/auth/login" method="post">
+    <label for="username">Username:</label>
+    <input type="text" name="username" placeholder="Walter_White" required="true">
+    <label for="password">Password:</label>
+    <input type="password" name="password" placeholder="******" required="true">
+    <button type="submit">Login</button>
+    {{#if error}}
+        <p style="color:red">{{error}}</p>
+    {{/if}}
+</form>

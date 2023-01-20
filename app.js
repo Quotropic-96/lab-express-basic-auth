@@ -41,7 +41,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.set('trust proxy', 1);
 app.use(
   session({
-    name: 'show-app',
+    name: 'auth-lab',
     secret: process.env.SESSION_SECRET,
     resave: true,
     saveUninitialized: false,

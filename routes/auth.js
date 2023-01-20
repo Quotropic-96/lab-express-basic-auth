@@ -40,4 +40,28 @@ router.get('/login', (req, res, next) => {
     res.render('auth/login');
 });
 
+router.post('/login', async (req, res, next) => {
+    const { username, password } = req.body;
+    if (!username || !password) {
+        res.render('auth/login', {error: 'All fields must be provided'});
+        return;
+    }
+    try {
+        const userInDB = await User.findOne({ username: username});
+        if (!userInDB) {
+            res.render('auth/login', { error: `${username} does not exist`});
+            return;
+        }
+        const passwordMatch = await bcrypt.compare(password, userInDB.hashedPassword);
+        if (passwordMatch) {
+            req.session.currentUser = userInDB;
+            res.render('user/profile', userInDB);
+        } else {
+            res.render('auth/login', {error: 'Unable to authenticate'})
+        }
+    } catch (error) {
+        next(error);
+    }
+})
+
 module.exports = router;
