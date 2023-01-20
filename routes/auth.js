@@ -36,10 +36,12 @@ router.post('/signup', async (req, res, next) => {
     }
 });
 
+/* GET login page */
 router.get('/login', (req, res, next) => {
     res.render('auth/login');
 });
 
+/* POST log in */
 router.post('/login', async (req, res, next) => {
     const { username, password } = req.body;
     if (!username || !password) {
@@ -63,5 +65,17 @@ router.post('/login', async (req, res, next) => {
         next(error);
     }
 })
+
+/* GET logout */
+router.get('/logout', (req, res, next) => {
+    req.session.destroy((err) => {
+      if (err) {
+        next(err)
+      } else {
+        res.clearCookie('show-app')
+        res.redirect('/auth/login');
+      }
+    });
+  });
 
 module.exports = router;
