@@ -22,7 +22,7 @@ router.post('/signup', async (req, res, next) => {
         return;
     }
     try {
-        const userInDB = User.findOne({ username: username});
+        const userInDB = await User.findOne({ username: username});
         if (userInDB) {
             res.render('auth/signup', { error: "There is already one user with this username"});
             return;
@@ -30,7 +30,7 @@ router.post('/signup', async (req, res, next) => {
         const salt = await bcrypt.genSalt(saltRounds);
         const hashedPassword = await bcrypt.hash(password, salt);
         const newUser = await User.create({ username, hashedPassword});
-        res.render('auth/profile', newUser);
+        res.render('user/profile', newUser);
     } catch (error) {
         next(error);
     }
